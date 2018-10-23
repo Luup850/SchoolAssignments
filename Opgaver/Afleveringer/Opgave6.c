@@ -1,14 +1,14 @@
 #include<stdio.h>
 #include<math.h>
 
-/*
-* Prototypes
+/*  ----------[Prototypes]----------
+*   Prototypes for the two functions
 */
 double trap(double, double, int, double(*)(double));
 double getYCoordinate(double);
 
-/*
-*   Main function
+/*  ---[Main]---
+*   The main function
 */
 int main(void)
 {
