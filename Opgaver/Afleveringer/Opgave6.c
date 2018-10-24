@@ -7,12 +7,12 @@
 double trap(double, double, int, double(*)(double));
 double getYCoordinate(double);
 
-/*  ---[Main]---
+/*  ------[Main]-----
 *   The main function
 */
 int main(void)
 {
-    /* Define user input variables */
+    /* Declare user input variables */
     double a, b, n;
 
     /* Ask user for inputs */
@@ -33,10 +33,10 @@ double trap(double a, double b, int n, double(*f)(double x))
     double h = (b - a) / n;
     double sum = 0;
 
-    /* Slice the graph in to n defined of times */
+    /* Slice the graph in to n pieces of times */
     for(int i = 0; i < n; i++)
     {
-        /* Get the sum of all the slices */
+        /* Get the sum of all the pieces */
         sum += f(a + ((b - a) / n) * i);
     }
 
