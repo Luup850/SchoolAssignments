@@ -17,6 +17,7 @@ int main(void)
     int arraySize1 = sizeof(array1) / sizeof(double), arraySize2 = sizeof(array2) / sizeof(double);
     int combinedArraySize = findByteSize(array1, array2, arraySize1, arraySize2) / sizeof(double);
 
+    /*  Create new array that is the size of the difference in array 1 and 2    */
     combinedArray = malloc(findByteSize(array1, array2, arraySize1, arraySize2));
     sortArray(array1, array2, combinedArray, combinedArraySize, arraySize1, arraySize2);
 
@@ -31,7 +32,7 @@ int main(void)
 
 /*----------------------[Function]----------------------
     Find the byte size of two arrays without duplicates
-*/------------------------------------------------------
+------------------------------------------------------*/
 int findByteSize(double *array1, double *array2, int arraySize1, int arraySize2)
 {
     int a = 0, b = 0, size = 1;
@@ -50,19 +51,19 @@ int findByteSize(double *array1, double *array2, int arraySize1, int arraySize2)
 
 /*-------[Function]-------
     Combine the two arrays
-*/------------------------
+------------------------*/
 void sortArray(double *arraySort1, double *arraySort2, double *newArray, int newArraySize, int arraySize1, int arraySize2)
 {
     int a = 0, b = 0;
 
     for(int i = 0; i <= newArraySize; i++)
     {
-        if(arraySort1[a] < arraySort2[b] || arraySize2 <= b)
+        if(arraySort1[a] < arraySort2[b] || arraySize2 == b)
         {
             newArray[i] = arraySort1[a];
             a++;
         }
-        else if(arraySort1[a] > arraySort2[b] || arraySize1 <= a)
+        else if(arraySort1[a] > arraySort2[b] || arraySize1 == a)
         {
             newArray[i] = arraySort2[b];
             b++;
