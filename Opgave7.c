@@ -1,16 +1,19 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-/* Prototypes */
+/*  Prototypes          */
 int findByteSize(double *array1, double *array2, int arraySize1, int arraySize2);
 void sortArray(double *arraySort1, double *arraySort2, double *newArray, int newArraySize, int arraySize1, int arraySize2);
 
 
 int main(void)
 {
+    /*  Variables       */
     double *combinedArray;
     double array1[] = {-10.5, -1.8, 3.5, 6.3, 7.2};
     double array2[] = {-1.8, 3.1, 6.3};
+
+    /*  Array lengths   */
     int arraySize1 = sizeof(array1) / sizeof(double), arraySize2 = sizeof(array2) / sizeof(double);
     int combinedArraySize = findByteSize(array1, array2, arraySize1, arraySize2) / sizeof(double);
 
@@ -26,6 +29,9 @@ int main(void)
     return 0;
 }
 
+/*----------------------[Function]----------------------
+    Find the byte size of two arrays without duplicates
+*/------------------------------------------------------
 int findByteSize(double *array1, double *array2, int arraySize1, int arraySize2)
 {
     int a = 0, b = 0, size = 1;
@@ -42,6 +48,9 @@ int findByteSize(double *array1, double *array2, int arraySize1, int arraySize2)
     return (arraySize1 + arraySize2 - size) * sizeof(double);
 }
 
+/*-------[Function]-------
+    Combine the two arrays
+*/------------------------
 void sortArray(double *arraySort1, double *arraySort2, double *newArray, int newArraySize, int arraySize1, int arraySize2)
 {
     int a = 0, b = 0;
