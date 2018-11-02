@@ -59,7 +59,7 @@ void sortArray(double *arraySort1, double *arraySort2, double *newArray, int new
 {
     int a = 0, b = 0;
 
-    /* Sorting algorith */
+    /* Sorting algorithm */
     for(int i = 0; i <= newArraySize; i++)
     {
         if(arraySort1[a] < arraySort2[b] || arraySize2 == b)
