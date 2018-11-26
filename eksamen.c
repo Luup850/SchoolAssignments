@@ -1,18 +1,19 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<ctype.h> /* Isupper */
 
 /* Anti magic number system */
 #define MAX_NAME_SIZE 40
 #define MAX_TEAM_NATIONALITY_NAME 4
 #define ARRAY_SIZE 790
-#define INPUT_FILE "cykelloeb.txt"
+#define INPUT_FILE "cykelloeb.text"
 
 /* Structs */
 struct cycleRace
 {
     char raceName[MAX_NAME_SIZE];
-    char name[MAX_NAME_SIZE];
+    char firstName[MAX_NAME_SIZE];
     char lastName[MAX_NAME_SIZE];
     int age;
     char team[MAX_TEAM_NATIONALITY_NAME];
@@ -25,7 +26,7 @@ struct cycleRace
 
 struct cyclist
 {
-    char name[MAX_NAME_SIZE];
+    char firstName[MAX_NAME_SIZE];
     char lastName[MAX_NAME_SIZE];
     int age;
 };
@@ -46,7 +47,7 @@ int main(int argc, char const *argv[])
 
     loadDataSet(INPUT_FILE, raceList);
 
-    printf("%s \n", raceList[0].name);
+    printf("There should be stuff here! %s \n", raceList[1].raceName);
 
     return 0;
 }
@@ -57,55 +58,78 @@ void loadDataSet(const char *dataSet, cycleRace *r)
     /* Char array used to find name, lastname and placement */
     char a[MAX_NAME_SIZE];
 
+    /* Open the data set */
     FILE* f;
     f = fopen(dataSet, "r");
+    int ch = getc(f);
+    int i = 0;
 
-    for(int i = 0; i <= 0; i++)
+    do
     {
         fscanf(f, " %s", r[i].raceName); /* Race */
-        printf("%s\n", r[i].raceName);
+        //printf("%s\n", r[i].raceName);
         fscanf(f, " \" %[^\"]s", a); /* Racer name and lastname */
-        printf("%s\n", a);
-        /*for(int i = 0; i <= MAX_NAME_SIZE; i++)
+        
+        /* Look for the first uppercase word */
+        for(int j = 0; j <= MAX_NAME_SIZE; j++)
         {
+            /* Check if the first letter is uppercase */
+            if(isupper(a[j]))
+            {
+                /* Check if the second letter is uppercase, to find out where the last name begins */
+                if(isupper(a[j+1]))
+                {
+                    /* Copy the first bit before the first uppercase word, since it gotta be the first name(s) */
+                    strncpy(r[i].firstName, a, j-1);
+                    //printf("%s ", r[i].firstName);
 
-        }*/
+                    /* Copy the last bit since it gotta be the last name(s) */
+                    strcpy(r[i].lastName, a+j);
+                    //printf("%s\n", r[i].lastName);
+
+                    /* Get out of for loop */
+                    j = MAX_NAME_SIZE+1;
+                }
+            }
+        }
 
         fscanf(f, " \" %*[|] %d", &r[i].age);
-        printf("%d \n", r[i].age);
+        //printf("%d \n", r[i].age);
 
         fscanf(f, " %s", r[i].team); /* Racer team */
-        printf("%s \n", r[i].team);
+        //printf("%s \n", r[i].team);
         fscanf(f, " %s", r[i].nationality); /* Racer nationality */
-        printf("%s \n", r[i].nationality);
+        //printf("%s \n", r[i].nationality);
         fscanf(f, " %*[|] %s", a); /* Racer placement (-2 if DNF and -1 if OTL) */
-        printf("%s \n", a);
+        //printf("%s \n", a);
 
         if(strcmp(a, "DNF") == 0)
         {
-            printf("Very bad");
+            //printf("Very bad");
             r[i].placement = -2;
             r[i].trackTimeHours = 0;
             r[i].trackTimeMin = 0;
             r[i].trackTimeSec = 0;
-            fscanf(f, " %*[-] ");
+            fscanf(f, " -");
         }
         else if(strcmp(a, "OTL") == 0)
         {
-            printf("Bad");
+            //printf("Bad");
             r[i].placement = -1;
 
             fscanf(f, " %d", &r[i].trackTimeHours);
-            fscanf(f, "%[:]s %d", &r[i].trackTimeMin);
-            fscanf(f, "%[:]s %d ", &r[i].trackTimeSec);
+            fscanf(f, ":%d", &r[i].trackTimeMin);
+            fscanf(f, ":%d", &r[i].trackTimeSec);
         }
         else
         {
-            printf("Do we get this far?");
+            //printf("Do we get this far?");
             fscanf(f, " %d", &r[i].trackTimeHours);
-            fscanf(f, ":%d", &r[i].trackTimeHours);
-            fscanf(f, ":%d ", &r[i].trackTimeHours);
+            fscanf(f, ":%d", &r[i].trackTimeMin);
+            fscanf(f, ":%d", &r[i].trackTimeSec);
         }
-        printf("%d:%d:%d\n", r[i].trackTimeHours, r[i].trackTimeMin, r[i].trackTimeSec);
-    }
+        printf("I fuck up at %d\n", i);
+        //printf("%d:%d:%d\n", r[i].trackTimeHours, r[i].trackTimeMin, r[i].trackTimeSec);
+        i++;
+    } while(ch == EOF);
 }
