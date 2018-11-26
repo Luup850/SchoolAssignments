@@ -7,6 +7,7 @@
 #define MAX_NAME_SIZE 40
 #define MAX_TEAM_NATIONALITY_NAME 4
 #define ARRAY_SIZE 790
+#define DATA_SIZE 8000
 #define INPUT_FILE "cykelloeb.text"
 
 /* Structs */
@@ -43,10 +44,8 @@ void loadDataSet(const char *dataSet, cycleRace *r);
 /* Main function */
 int main(int argc, char const *argv[])
 {
-    cycleRace raceList[ARRAY_SIZE];
-
+    cycleRace raceList[DATA_SIZE];
     loadDataSet(INPUT_FILE, raceList);
-
     printf("There should be stuff here! %s \n", raceList[1].raceName);
 
     return 0;
@@ -56,35 +55,37 @@ int main(int argc, char const *argv[])
 void loadDataSet(const char *dataSet, cycleRace *r)
 {
     /* Char array used to find name, lastname and placement */
-    char a[MAX_NAME_SIZE];
+    char temp[MAX_NAME_SIZE];
 
     /* Open the data set */
     FILE* f;
     f = fopen(dataSet, "r");
-    int ch = getc(f);
+    int ch;
     int i = 0;
 
-    do
+    for(int i = 0; i < ARRAY_SIZE; i++)
     {
-        fscanf(f, " %s", r[i].raceName); /* Race */
+        printf("I fuck up at %d\n", i);
+        int s = fscanf(f, " %s", r[i].raceName); /* Race */
         //printf("%s\n", r[i].raceName);
-        fscanf(f, " \" %[^\"]s", a); /* Racer name and lastname */
+        fscanf(f, " \" %[^\"]s", temp); /* Racer name and lastname */
         
         /* Look for the first uppercase word */
         for(int j = 0; j <= MAX_NAME_SIZE; j++)
         {
             /* Check if the first letter is uppercase */
-            if(isupper(a[j]))
+            if(isupper(temp[j]) || temp[j] == '\'')
             {
                 /* Check if the second letter is uppercase, to find out where the last name begins */
-                if(isupper(a[j+1]))
+                if(isupper(temp[j+1]) || temp[j+1] == '\'')
                 {
                     /* Copy the first bit before the first uppercase word, since it gotta be the first name(s) */
-                    strncpy(r[i].firstName, a, j-1);
-                    //printf("%s ", r[i].firstName);
+                    strncpy(r[i].firstName, temp, j-1);
+                    r[i].firstName[j-1] = '\0';
+                    //printf("%s | ", r[i].firstName);
 
                     /* Copy the last bit since it gotta be the last name(s) */
-                    strcpy(r[i].lastName, a+j);
+                    strcpy(r[i].lastName, temp+j);
                     //printf("%s\n", r[i].lastName);
 
                     /* Get out of for loop */
@@ -100,10 +101,10 @@ void loadDataSet(const char *dataSet, cycleRace *r)
         //printf("%s \n", r[i].team);
         fscanf(f, " %s", r[i].nationality); /* Racer nationality */
         //printf("%s \n", r[i].nationality);
-        fscanf(f, " %*[|] %s", a); /* Racer placement (-2 if DNF and -1 if OTL) */
+        fscanf(f, " %*[|] %s", temp); /* Racer placement (-2 if DNF and -1 if OTL) */
         //printf("%s \n", a);
 
-        if(strcmp(a, "DNF") == 0)
+        if(strcmp(temp, "DNF") == 0)
         {
             //printf("Very bad");
             r[i].placement = -2;
@@ -112,7 +113,7 @@ void loadDataSet(const char *dataSet, cycleRace *r)
             r[i].trackTimeSec = 0;
             fscanf(f, " -");
         }
-        else if(strcmp(a, "OTL") == 0)
+        else if(strcmp(temp, "OTL") == 0)
         {
             //printf("Bad");
             r[i].placement = -1;
@@ -128,8 +129,8 @@ void loadDataSet(const char *dataSet, cycleRace *r)
             fscanf(f, ":%d", &r[i].trackTimeMin);
             fscanf(f, ":%d", &r[i].trackTimeSec);
         }
-        printf("I fuck up at %d\n", i);
         //printf("%d:%d:%d\n", r[i].trackTimeHours, r[i].trackTimeMin, r[i].trackTimeSec);
-        i++;
-    } while(ch == EOF);
+    }
+
+    fclose(f);
 }
