@@ -81,7 +81,7 @@ void loadDataSet(const char *dataSet, cycleRace *r)
                     /* Copy the first bit before the first uppercase word, since it gotta be the first name(s) */
                     strncpy(r[i].firstName, temp, j-1);
                     r[i].firstName[j-1] = '\0';
-                    printf("%s | ", r[i].firstName);
+                    //printf("%s | ", r[i].firstName);
 
                     /* Copy the last bit since it gotta be the last name(s) */
                     strcpy(r[i].lastName, temp+j);
@@ -101,7 +101,7 @@ void loadDataSet(const char *dataSet, cycleRace *r)
         fscanf(f, " %s", r[i].nationality); /* Racer nationality */
         //printf("%s \n", r[i].nationality);
         fscanf(f, " %*[|] %s", temp); /* Racer placement (-2 if DNF and -1 if OTL) */
-        //printf("%s \n", a);
+        //printf("%s \n", temp);
 
         if(strcmp(temp, "DNF") == 0)
         {
@@ -124,10 +124,12 @@ void loadDataSet(const char *dataSet, cycleRace *r)
         else
         {
             //printf("Do we get this far?");
+            r[i].placement = atoi(temp);
             fscanf(f, " %d", &r[i].trackTimeHours);
             fscanf(f, ":%d", &r[i].trackTimeMin);
             fscanf(f, ":%d", &r[i].trackTimeSec);
         }
+        printf("%d\n", r[i].placement);
         //printf("%d:%d:%d\n", r[i].trackTimeHours, r[i].trackTimeMin, r[i].trackTimeSec);
     }
 
