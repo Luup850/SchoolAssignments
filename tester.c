@@ -2,6 +2,6 @@
 
 int main(int argc, char const *argv[])
 {
-    printf("%d", "DNF");
+    printf("%c", ' ');
     return 0;
 }

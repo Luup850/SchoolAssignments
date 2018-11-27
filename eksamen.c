@@ -39,13 +39,17 @@ typedef struct cyclist cyclist;
 
 /* Prototypes */
 void loadDataSet(const char *dataSet, cycleRace *r);
+void printNationalResults(const cycleRace *r, const char nat[4], const int overAge);
+
 
 /* Main function */
 int main(int argc, char const *argv[])
 {
     cycleRace raceList[ARRAY_SIZE];
+    cyclist riderList[ARRAY_SIZE];
     loadDataSet(INPUT_FILE, raceList);
-    printf("There should be stuff here! %s \n", raceList[1].firstName);
+
+    printNationalResults(raceList, "ITA", 30);
 
     return 0;
 }
@@ -81,11 +85,9 @@ void loadDataSet(const char *dataSet, cycleRace *r)
                     /* Copy the first bit before the first uppercase word, since it gotta be the first name(s) */
                     strncpy(r[i].firstName, temp, j-1);
                     r[i].firstName[j-1] = '\0';
-                    //printf("%s | ", r[i].firstName);
 
                     /* Copy the last bit since it gotta be the last name(s) */
                     strcpy(r[i].lastName, temp+j);
-                    //printf("%s\n", r[i].lastName);
 
                     /* Get out of for loop */
                     j = MAX_NAME_SIZE+1;
@@ -94,18 +96,14 @@ void loadDataSet(const char *dataSet, cycleRace *r)
         }
 
         fscanf(f, " \" %*[|] %d", &r[i].age);
-        //printf("%d \n", r[i].age);
 
         fscanf(f, " %s", r[i].team); /* Racer team */
-        //printf("%s \n", r[i].team);
-        fscanf(f, " %s", r[i].nationality); /* Racer nationality */
-        //printf("%s \n", r[i].nationality);
-        fscanf(f, " %*[|] %s", temp); /* Racer placement (-2 if DNF and -1 if OTL) */
-        //printf("%s \n", temp);
 
+        fscanf(f, " %s", r[i].nationality); /* Racer nationality */
+
+        fscanf(f, " %*[|] %s", temp); /* Racer placement (-2 if DNF and -1 if OTL) */
         if(strcmp(temp, "DNF") == 0)
         {
-            //printf("Very bad");
             r[i].placement = -2;
             r[i].trackTimeHours = 0;
             r[i].trackTimeMin = 0;
@@ -114,7 +112,6 @@ void loadDataSet(const char *dataSet, cycleRace *r)
         }
         else if(strcmp(temp, "OTL") == 0)
         {
-            //printf("Bad");
             r[i].placement = -1;
 
             fscanf(f, " %d", &r[i].trackTimeHours);
@@ -123,15 +120,32 @@ void loadDataSet(const char *dataSet, cycleRace *r)
         }
         else
         {
-            //printf("Do we get this far?");
             r[i].placement = atoi(temp);
             fscanf(f, " %d", &r[i].trackTimeHours);
             fscanf(f, ":%d", &r[i].trackTimeMin);
             fscanf(f, ":%d", &r[i].trackTimeSec);
         }
-        printf("%d\n", r[i].placement);
-        //printf("%d:%d:%d\n", r[i].trackTimeHours, r[i].trackTimeMin, r[i].trackTimeSec);
     }
 
     fclose(f);
+}
+
+void printNationalResults(const cycleRace *r, const char nat[4], const int overAge)
+{
+    for(int i = 0; i < ARRAY_SIZE; i++)
+    {
+        if(strcmp(r[i].nationality, nat) == 0 && r[i].age >= overAge)
+        {
+            printf("%s | %s %s | %d | %s | %s | ", r[i].raceName, r[i].firstName, r[i].lastName, r[i].age, r[i].team, r[i].nationality);
+
+            if(r[i].placement == -1)
+                printf("OTL | ");
+            else if(r[i].placement == -2)
+                printf("DNF | ");
+            else
+                printf("%d | ", r[i].placement);
+
+            printf("%d:%d:%d \n", r[i].trackTimeHours, r[i].trackTimeMin, r[i].trackTimeSec);
+        }
+    }
 }
