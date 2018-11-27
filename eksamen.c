@@ -29,6 +29,8 @@ struct cyclist
     char firstName[MAX_NAME_SIZE];
     char lastName[MAX_NAME_SIZE];
     int age;
+    int numberOfCompletedRaces;
+    int points;
 };
 
 
@@ -40,6 +42,7 @@ typedef struct cyclist cyclist;
 /* Prototypes */
 void loadDataSet(const char *dataSet, cycleRace *r);
 void printNationalResults(const cycleRace *r, const char nat[4], const int overAge);
+int createUniqueList(const cycleRace *r, cyclist *p);
 
 
 /* Main function */
@@ -49,7 +52,14 @@ int main(int argc, char const *argv[])
     cyclist riderList[ARRAY_SIZE];
     loadDataSet(INPUT_FILE, raceList);
 
-    printNationalResults(raceList, "ITA", 30);
+    int u = createUniqueList(raceList, riderList);
+    
+    for(int i = 0; i < u; i++)
+    {
+        printf("%5d %s \n", riderList[i].numberOfCompletedRaces, riderList[i].firstName);
+    }
+
+    //printNationalResults(raceList, "ITA", 30);
 
     return 0;
 }
@@ -147,4 +157,38 @@ void printNationalResults(const cycleRace *r, const char nat[4], const int overA
             printf("%d:%d:%d \n", r[i].trackTimeHours, r[i].trackTimeMin, r[i].trackTimeSec);
         }
     }
+}
+
+int createUniqueList(const cycleRace *r, cyclist *p)
+{
+    int uniquePerson = 0;
+
+    for(int i = 0; i < ARRAY_SIZE; i++)
+    {
+        p[i].numberOfCompletedRaces = 1;
+    }
+
+    for(int i = 0; i < ARRAY_SIZE; i++)
+    {
+        int nameFound = 0;
+        for(int j = 0; j < ARRAY_SIZE; j++)
+        {
+            if(strcmp(r[i].firstName, p[j].firstName) == 0 && strcmp(r[i].lastName, p[j].lastName) == 0)
+                nameFound = 1;
+        }
+
+        if(!nameFound)
+        {
+            strcpy(p[uniquePerson].firstName, r[i].firstName);
+            strcpy(p[i].lastName, r[i].lastName);
+            p[i].age = r[i].age;
+            uniquePerson++;
+        }
+        else if(r[i].placement > -2)
+        {
+            p[uniquePerson].numberOfCompletedRaces += 1;
+        }
+    }
+
+    return uniquePerson;
 }
