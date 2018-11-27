@@ -7,7 +7,6 @@
 #define MAX_NAME_SIZE 40
 #define MAX_TEAM_NATIONALITY_NAME 4
 #define ARRAY_SIZE 790
-#define DATA_SIZE 8000
 #define INPUT_FILE "cykelloeb.text"
 
 /* Structs */
@@ -44,9 +43,9 @@ void loadDataSet(const char *dataSet, cycleRace *r);
 /* Main function */
 int main(int argc, char const *argv[])
 {
-    cycleRace raceList[DATA_SIZE];
+    cycleRace raceList[ARRAY_SIZE];
     loadDataSet(INPUT_FILE, raceList);
-    printf("There should be stuff here! %s \n", raceList[1].raceName);
+    printf("There should be stuff here! %s \n", raceList[1].firstName);
 
     return 0;
 }
@@ -65,7 +64,7 @@ void loadDataSet(const char *dataSet, cycleRace *r)
 
     for(int i = 0; i < ARRAY_SIZE; i++)
     {
-        printf("I fuck up at %d\n", i);
+        //printf("I fuck up at %d\n", i);
         int s = fscanf(f, " %s", r[i].raceName); /* Race */
         //printf("%s\n", r[i].raceName);
         fscanf(f, " \" %[^\"]s", temp); /* Racer name and lastname */
@@ -82,7 +81,7 @@ void loadDataSet(const char *dataSet, cycleRace *r)
                     /* Copy the first bit before the first uppercase word, since it gotta be the first name(s) */
                     strncpy(r[i].firstName, temp, j-1);
                     r[i].firstName[j-1] = '\0';
-                    //printf("%s | ", r[i].firstName);
+                    printf("%s | ", r[i].firstName);
 
                     /* Copy the last bit since it gotta be the last name(s) */
                     strcpy(r[i].lastName, temp+j);
