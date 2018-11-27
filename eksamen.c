@@ -63,13 +63,12 @@ void loadDataSet(const char *dataSet, cycleRace *r)
     /* Open the data set */
     FILE* f;
     f = fopen(dataSet, "r");
-    int ch;
     int i = 0;
 
     for(int i = 0; i < ARRAY_SIZE; i++)
     {
         //printf("I fuck up at %d\n", i);
-        int s = fscanf(f, " %s", r[i].raceName); /* Race */
+        fscanf(f, " %s", r[i].raceName); /* Race */
         //printf("%s\n", r[i].raceName);
         fscanf(f, " \" %[^\"]s", temp); /* Racer name and lastname */
         
