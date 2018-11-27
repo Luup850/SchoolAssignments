@@ -136,7 +136,7 @@ void printNationalResults(const cycleRace *r, const char nat[4], const int overA
     {
         if(strcmp(r[i].nationality, nat) == 0 && r[i].age >= overAge)
         {
-            printf("%20s\t| %20s %20s\t| %d\t| %s\t| %s\t| ", r[i].raceName, r[i].firstName, r[i].lastName, r[i].age, r[i].team, r[i].nationality);
+            printf("%-20s\t| %-20s %-20s\t| %d\t| %s\t| %s\t| ", r[i].raceName, r[i].firstName, r[i].lastName, r[i].age, r[i].team, r[i].nationality);
 
             if(r[i].placement == -1)
                 printf("OTL\t| ");
