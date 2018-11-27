@@ -136,14 +136,14 @@ void printNationalResults(const cycleRace *r, const char nat[4], const int overA
     {
         if(strcmp(r[i].nationality, nat) == 0 && r[i].age >= overAge)
         {
-            printf("%s | %s %s | %d | %s | %s | ", r[i].raceName, r[i].firstName, r[i].lastName, r[i].age, r[i].team, r[i].nationality);
+            printf("%s\t| %s %s\t| %d\t| %s\t| %s\t| ", r[i].raceName, r[i].firstName, r[i].lastName, r[i].age, r[i].team, r[i].nationality);
 
             if(r[i].placement == -1)
-                printf("OTL | ");
+                printf("OTL\t| ");
             else if(r[i].placement == -2)
-                printf("DNF | ");
+                printf("DNF\t| ");
             else
-                printf("%d | ", r[i].placement);
+                printf("%d\t| ", r[i].placement);
 
             printf("%d:%d:%d \n", r[i].trackTimeHours, r[i].trackTimeMin, r[i].trackTimeSec);
         }
