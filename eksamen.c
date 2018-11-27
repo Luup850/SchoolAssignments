@@ -53,13 +53,13 @@ int main(int argc, char const *argv[])
     loadDataSet(INPUT_FILE, raceList);
 
     int u = createUniqueList(raceList, riderList);
-    
+    /*
     for(int i = 0; i < u; i++)
     {
         printf("%5d %s \n", riderList[i].numberOfCompletedRaces, riderList[i].firstName);
-    }
+    }*/
 
-    //printNationalResults(raceList, "ITA", 30);
+    printNationalResults(raceList, "ITA", 30);
 
     return 0;
 }
@@ -80,7 +80,8 @@ void loadDataSet(const char *dataSet, cycleRace *r)
         //printf("I fuck up at %d\n", i);
         fscanf(f, " %s", r[i].raceName); /* Race */
         //printf("%s\n", r[i].raceName);
-        fscanf(f, " \" %[^\"]s", temp); /* Racer name and lastname */
+        fscanf(f, " \" %s", r[i].firstName);
+        fscanf(f, " %[^\"]s", temp); /* Racer name and lastname */
         
         /* Look for the first uppercase word */
         for(int j = 0; j <= MAX_NAME_SIZE; j++)
@@ -91,10 +92,6 @@ void loadDataSet(const char *dataSet, cycleRace *r)
                 /* Check if the second letter is uppercase, to find out where the last name begins */
                 if(isupper(temp[j+1]) || temp[j+1] == '\'')
                 {
-                    /* Copy the first bit before the first uppercase word, since it gotta be the first name(s) */
-                    strncpy(r[i].firstName, temp, j-1);
-                    r[i].firstName[j-1] = '\0';
-
                     /* Copy the last bit since it gotta be the last name(s) */
                     strcpy(r[i].lastName, temp+j);
 
