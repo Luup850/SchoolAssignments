@@ -161,32 +161,52 @@ void printNationalResults(const cycleRace *r, const char nat[4], const int overA
 
 int createUniqueList(const cycleRace *r, cyclist *p)
 {
+    /* Var storing how many unique people there is */
     int uniquePerson = 0;
 
+    /* Setting completed races to zero by default */
     for(int i = 0; i < ARRAY_SIZE; i++)
     {
-        p[i].numberOfCompletedRaces = 1;
+        p[i].numberOfCompletedRaces = 0;
     }
 
+    /* Loop through r */
     for(int i = 0; i < ARRAY_SIZE; i++)
     {
+        /* Var used to check if the name has been found before */
         int nameFound = 0;
+
+        /* Loop through p to see if we already have that rider */
         for(int j = 0; j < ARRAY_SIZE; j++)
         {
+            /* If we have that rider. Set nameFound to 1 */
             if(strcmp(r[i].firstName, p[j].firstName) == 0 && strcmp(r[i].lastName, p[j].lastName) == 0)
+            {
                 nameFound = 1;
+
+                if(r[i].placement > -2)
+                {
+                    p[j].numberOfCompletedRaces += 1;
+                }
+            }
         }
 
+        /* if we didnt find name then we know its the first time we've found this rider. Create a new rider in p */
         if(!nameFound)
         {
+            /* Copy the riders name, lastname and age from r to p */
             strcpy(p[uniquePerson].firstName, r[i].firstName);
             strcpy(p[i].lastName, r[i].lastName);
             p[i].age = r[i].age;
+
+            /* Count up uniquePerson since this is the first time we've found this rider */
             uniquePerson++;
-        }
-        else if(r[i].placement > -2)
-        {
-            p[uniquePerson].numberOfCompletedRaces += 1;
+
+            /* If this unique rider didnt DNF then increase completed races to 1 */
+            if(r[uniquePerson].placement > -2)
+            {
+                p[uniquePerson].numberOfCompletedRaces = 1;
+            }
         }
     }
 
