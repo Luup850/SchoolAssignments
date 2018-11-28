@@ -69,6 +69,7 @@ int main(int argc, char const *argv[])
     calculateScore(riderList, raceList, u);
     sortByTop(riderList, u);
     /* ---------------------------------------------- */
+    
 
     if(strcmp(argv[1], "--print") == 0)
     {
@@ -84,6 +85,7 @@ int main(int argc, char const *argv[])
 
         /* Opgave 3 */
         printf("\n\nOpgave 3:\n");
+        printf("--------------------------------------------\nPosition \t|  Name \t|  Points\n--------------------------------------------\n");
         for(int i = 0; i < 10; i++)
         {
             printf("Placement: %-4d %-20s %-20s %10d\n", i+1, riderList[i].firstName, riderList[i].lastName, riderList[i].points);
@@ -349,7 +351,7 @@ void calculateScore(cyclist *p, const cycleRace *r, const int listLength)
             if(strcmp(p[i].firstName, r[j].firstName) == 0 && strcmp(p[i].lastName, r[j].lastName) == 0)
             {
                 /* The rider didnt DNF or OTL */
-                if(r[j].placement < 0)
+                if(r[j].placement > 0)
                 {
                     /* Give 3 points plus some points based in the riders placement */
                     p[i].points += (3 + ((participants(r[j].raceName, r) - r[j].placement) / 13));
@@ -392,11 +394,11 @@ int cmpfunc(const void *a, const void *b)
     }
     else if(p1->points < p2->points)
     {
-        return -1;
+        return 1;
     }
     else if(p1->points > p2->points)
     {
-        return 1;
+        return -1;
     }
     else
     {
@@ -405,7 +407,7 @@ int cmpfunc(const void *a, const void *b)
     }
 }
 
-
+cyclist riderList[ARRAY_SIZE];
 void sortByTop(cyclist *p, const int listLength)
 {
     qsort(p, listLength, sizeof(cyclist), cmpfunc);
