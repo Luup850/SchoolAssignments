@@ -7,7 +7,7 @@
 #define MAX_NAME_SIZE 40
 #define MAX_TEAM_NATIONALITY_NAME 4
 #define ARRAY_SIZE 790
-#define INPUT_FILE "cykelloeb.text"
+#define INPUT_FILE "cykelloeb"
 
 /* Structs */
 struct cycleRace
