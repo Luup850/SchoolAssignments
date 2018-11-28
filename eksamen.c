@@ -46,6 +46,7 @@ void printNationalResults(const cycleRace *r, const char nat[4], const int overA
 int createUniqueList(const cycleRace *r, cyclist *p);
 void loadStringOfRiders(const cyclist *p, const int listLength, const int minRaceComp, const char *nat, char *resToReturn);
 int participants(const char *race, const cycleRace *r);
+void calculateScore(cyclist *p, const cycleRace *r, const int listLength);
 void sortByTop(cyclist *p, const int listLength);
 int cmpfunc(const void *a, const void *b);
 
@@ -58,26 +59,35 @@ int main(int argc, char const *argv[])
     cyclist riderList[ARRAY_SIZE];
     char listOfDanishRiders[ARRAY_SIZE];
     int menuVar = 0;
-    char wait;
     /* ---------------------------------- */
 
 
     /* Initialization */
     loadDataSet(INPUT_FILE, raceList);
     int u = createUniqueList(raceList, riderList);
-    sortByTop(riderList, u);
     loadStringOfRiders(riderList, u, 1, "DEN", listOfDanishRiders);
+    calculateScore(riderList, raceList, u);
+    sortByTop(riderList, u);
     /* ---------------------------------------------- */
 
     if(strcmp(argv[1], "--print") == 0)
     {
         menuVar = -1;
 
+        /* Opgave 1 */
         printf("Opgave 1:\n");
         printNationalResults(raceList, "ITA", 30, 99);
 
+        /* Opgave 2 */
         printf("\n\nOpgave 2:\n");
         printf("%s", listOfDanishRiders);
+
+        /* Opgave 3 */
+        printf("\n\nOpgave 3:\n");
+        for(int i = 0; i < 10; i++)
+        {
+            printf("Placement: %-4d %-20s %-20s %10d\n", i+1, riderList[i].firstName, riderList[i].lastName, riderList[i].points);
+        }
     }
 
 
@@ -134,7 +144,6 @@ void loadDataSet(const char *dataSet, cycleRace *r)
     /* Open the data set */
     FILE* f;
     f = fopen(dataSet, "r");
-    int i = 0;
 
     for(int i = 0; i < ARRAY_SIZE; i++)
     {
@@ -370,11 +379,6 @@ void calculateScore(cyclist *p, const cycleRace *r, const int listLength)
 }
 
 
-void sortByTop(cyclist *p, const int listLength)
-{
-    qsort(p, listLength, sizeof(p), cmpfunc);
-}
-
 /* Sorting function */
 int cmpfunc(const void *a, const void *b)
 {
@@ -399,4 +403,10 @@ int cmpfunc(const void *a, const void *b)
         printf("[ERROR]: Something went wrong with cmpfunc");
         return 0;
     }
+}
+
+
+void sortByTop(cyclist *p, const int listLength)
+{
+    qsort(p, listLength, sizeof(cyclist), cmpfunc);
 }
