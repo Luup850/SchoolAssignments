@@ -308,7 +308,7 @@ void loadStringOfRiders(const cyclist *p, const int listLength, const int minRac
     for(int i = 0; i <= listLength; i++)
     {
         /* Check if the current rider matches with the specifications given */
-        if(strcmp(p[i].nationality, nat) == 0 && p[i].numberOfCompletedRaces > 0)
+        if(strcmp(p[i].nationality, nat) == 0 && p[i].numberOfCompletedRaces >= minRaceComp)
         {
             /* Great he did. Now copy everything into the string resToReturn */
             strcat(resToReturn, itoa(p[i].numberOfCompletedRaces, buffer, 10));
