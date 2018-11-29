@@ -34,7 +34,7 @@ struct cyclist
     char nationality[MAX_TEAM_NATIONALITY_NAME];
     int numberOfCompletedRaces;
     int points;
-    int temp;
+    int random;
 };
 
 
@@ -444,20 +444,17 @@ void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, cons
     int saveForLater = -1;
     int bestTime = 0;
 
-    for(int i = 0; i <= listLength; i++)
-    {
-        p[i].temp = -1;
-    }
-
     for(int i = 0; i < listLength; i++)
     {
+        p[i].random = 9999999;
+
         for(int j = 0; j < ARRAY_SIZE; j++)
         {
             if(strcmp(p[i].firstName, r[j].firstName) == 0 && strcmp(p[i].lastName, r[j].lastName) == 0)
             {
                 if( r[j].placement > 0 && ((strcmp(r[j].raceName, rName1) == 0) || strcmp(r[j].raceName, rName2) == 0))
                 {
-                    p[i].temp += (r[j].trackTimeHours * 60 * 60) + (r[j].trackTimeMin * 60) + r[j].trackTimeSec;
+                    p[i].random += (r[j].trackTimeHours * 60 * 60) + (r[j].trackTimeMin * 60) + r[j].trackTimeSec;
                 }
             }
         }
@@ -466,12 +463,13 @@ void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, cons
     /* Find the best time for the two races */
     for(int i = 0; i < listLength; i++)
     {
-        if(saveForLater > p[i].temp || saveForLater == -1)
+        if(saveForLater > p[i].random)
         {
             bestTime = i;
-            saveForLater = p[i].temp;
-            printf("%ld %ld %ld\n", bestTime, saveForLater, p[i].temp);
+            saveForLater = p[i].random;
+            printf("%-20s %d %d\n", p[i].firstName, p[i].random, saveForLater);
         }
+        //printf("%-20s %d %d\n", p[i].firstName, p[i].random, bestTime);
     }
     *best = bestTime;
 }
