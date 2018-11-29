@@ -8,6 +8,8 @@
 #define MAX_TEAM_NATIONALITY_NAME 4
 #define ARRAY_SIZE 790
 #define INPUT_FILE "cykelloeb"
+#define OTL -1
+#define DNF -2
 
 /* Structs */
 struct cycleRace
@@ -44,11 +46,12 @@ typedef struct cyclist cyclist;
 void loadDataSet(const char *dataSet, cycleRace *r);
 void printNationalResults(const cycleRace *r, const char nat[4], const int overAge, const int underAge);
 int createUniqueList(const cycleRace *r, cyclist *p);
-void loadStringOfRiders(const cyclist *p, const int listLength, const int minRaceComp, const char *nat, char *resToReturn);
+char* getStringOfRiders(const cyclist *p, const int listLength, const int minRaceComp, const char *nat);
 int participants(const char *race, const cycleRace *r);
 void calculateScore(cyclist *p, const cycleRace *r, const int listLength);
 void sortByTop(cyclist *p, const int listLength);
 int cmpfunc(const void *a, const void *b);
+void runMenu(char const **argv, const cycleRace *raceList, const char *listOfDanes, const cyclist *riderList);
 
 
 /* Main function */
@@ -57,19 +60,31 @@ int main(int argc, char const *argv[])
     /* Variables */
     cycleRace raceList[ARRAY_SIZE];
     cyclist riderList[ARRAY_SIZE];
-    char listOfDanishRiders[ARRAY_SIZE];
-    int menuVar = 0;
     /* ---------------------------------- */
 
+    char *listOfDanes;
 
     /* Initialization */
     loadDataSet(INPUT_FILE, raceList);
     int u = createUniqueList(raceList, riderList);
-    loadStringOfRiders(riderList, u, 1, "DEN", listOfDanishRiders);
     calculateScore(riderList, raceList, u);
     sortByTop(riderList, u);
+    listOfDanes = getStringOfRiders(riderList, u, 1, "DEN");
     /* ---------------------------------------------- */
     
+    /* Main */
+    runMenu(argv, raceList, listOfDanes, riderList);
+
+
+    free(listOfDanes);
+    return 0;
+}
+
+
+/* Run's the user menu */
+void runMenu(char const **argv, const cycleRace *raceList, const char *listOfDanes, const cyclist *riderList)
+{
+    int menuVar = 0;
 
     if(strcmp(argv[1], "--print") == 0)
     {
@@ -81,7 +96,7 @@ int main(int argc, char const *argv[])
 
         /* Opgave 2 */
         printf("\n\nOpgave 2:\n");
-        printf("%s", listOfDanishRiders);
+        printf("%s", listOfDanes);
 
         /* Opgave 3 */
         printf("\n\nOpgave 3:\n");
@@ -91,7 +106,6 @@ int main(int argc, char const *argv[])
             printf("Placement: %-4d %-20s %-20s %10d\n", i+1, riderList[i].firstName, riderList[i].lastName, riderList[i].points);
         }
     }
-
 
     while(menuVar != -1)
     {
@@ -105,7 +119,7 @@ int main(int argc, char const *argv[])
         else if(menuVar == 2)
         {
             // Opgave 2
-            printf("%s", listOfDanishRiders);
+            printf("%s", listOfDanes);
         }
         else if(menuVar == 3)
         {
@@ -122,16 +136,6 @@ int main(int argc, char const *argv[])
             scanf(" r");
         }
     }
-
-    // Opgave 2
-
-    /*
-    for(int i = 0; i < u; i++)
-    {
-        printf("%5d %s \n", riderList[i].numberOfCompletedRaces, riderList[i].firstName);
-    }*/
-
-    return 0;
 }
 
 
@@ -182,7 +186,7 @@ void loadDataSet(const char *dataSet, cycleRace *r)
         fscanf(f, " %*[|] %s", temp); /* Racer placement (-2 if DNF and -1 if OTL) */
         if(strcmp(temp, "DNF") == 0)
         {
-            r[i].placement = -2;
+            r[i].placement = DNF;
             r[i].trackTimeHours = 0;
             r[i].trackTimeMin = 0;
             r[i].trackTimeSec = 0;
@@ -190,7 +194,7 @@ void loadDataSet(const char *dataSet, cycleRace *r)
         }
         else if(strcmp(temp, "OTL") == 0)
         {
-            r[i].placement = -1;
+            r[i].placement = OTL;
 
             fscanf(f, " %d", &r[i].trackTimeHours);
             fscanf(f, ":%d", &r[i].trackTimeMin);
@@ -225,9 +229,9 @@ void printNationalResults(const cycleRace *r, const char nat[4], const int overA
         {
             printf("%-20s\t| %-20s %-20s\t| %d\t| %s\t| %s\t| ", r[i].raceName, r[i].firstName, r[i].lastName, r[i].age, r[i].team, r[i].nationality);
 
-            if(r[i].placement == -1)
+            if(r[i].placement == OTL)
                 printf("OTL\t| ");
-            else if(r[i].placement == -2)
+            else if(r[i].placement == DNF)
                 printf("DNF\t| ");
             else
                 printf("%d\t| ", r[i].placement);
@@ -266,30 +270,30 @@ int createUniqueList(const cycleRace *r, cyclist *p)
             {
                 nameFound = 1;
 
-                if(r[i].placement > -2)
+                if(r[i].placement > DNF)
                 {
                     p[j].numberOfCompletedRaces += 1;
                 }
             }
         }
 
-        /* if we didnt find name then we know its the first time we've found this rider. Create a new rider in p */
+                /* if we didnt find name then we know its the first time we've found this rider. Create a new rider in p */
         if(!nameFound)
         {
             /* Copy the riders name, lastname and age from r to p */
             strcpy(p[uniquePerson].firstName, r[i].firstName);
-            strcpy(p[i].lastName, r[i].lastName);
-            p[i].age = r[i].age;
+            strcpy(p[uniquePerson].lastName, r[i].lastName);
+            p[uniquePerson].age = r[i].age;
             strcpy(p[uniquePerson].nationality, r[i].nationality);
 
-            /* Count up uniquePerson since this is the first time we've found this rider */
-            uniquePerson++;
-
             /* If this unique rider didnt DNF then increase completed races to 1 */
-            if(r[uniquePerson].placement > -2)
+            if(r[i].placement > DNF)
             {
                 p[uniquePerson].numberOfCompletedRaces = 1;
             }
+
+            /* Count up uniquePerson since this is the first time we've found this rider */
+            uniquePerson++;
         }
     }
     /* Return how many unique people there is in the list */
@@ -300,10 +304,22 @@ int createUniqueList(const cycleRace *r, cyclist *p)
 /*
     2. Return a list of all riders with a specific nationality 
 */
-void loadStringOfRiders(const cyclist *p, const int listLength, const int minRaceComp, const char *nat, char *resToReturn)
+char* getStringOfRiders(const cyclist *p, const int listLength, const int minRaceComp, const char *nat)
 {
     char buffer[20];
-    strcat(resToReturn, "------------------------\nNumber \tNames\n------------------------\n");
+    char *resToReturn;
+    int counter = 0;
+
+    for(int i = 0; i <= listLength; i++)
+    {
+        /* Check if the current rider matches with the specifications given */
+        if(strcmp(p[i].nationality, nat) == 0 && p[i].numberOfCompletedRaces >= minRaceComp)
+        {
+            counter += 3;
+        }
+    }
+
+    resToReturn = (char*)calloc(counter, MAX_NAME_SIZE);
 
     for(int i = 0; i <= listLength; i++)
     {
@@ -319,6 +335,8 @@ void loadStringOfRiders(const cyclist *p, const int listLength, const int minRac
             strcat(resToReturn, "\n");
         }
     }
+
+    return resToReturn;
 }
 
 
@@ -407,7 +425,6 @@ int cmpfunc(const void *a, const void *b)
     }
 }
 
-cyclist riderList[ARRAY_SIZE];
 void sortByTop(cyclist *p, const int listLength)
 {
     qsort(p, listLength, sizeof(cyclist), cmpfunc);
