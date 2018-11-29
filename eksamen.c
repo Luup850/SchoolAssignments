@@ -34,6 +34,7 @@ struct cyclist
     char nationality[MAX_TEAM_NATIONALITY_NAME];
     int numberOfCompletedRaces;
     int points;
+    int temp;
 };
 
 
@@ -51,7 +52,7 @@ int participants(const char *race, const cycleRace *r);
 void calculateScore(cyclist *p, const cycleRace *r, const int listLength);
 void sortByTop(cyclist *p, const int listLength);
 int cmpfunc(const void *a, const void *b);
-void runMenu(char const **argv, const cycleRace *raceList, const char *listOfDanes, const cyclist *riderList);
+void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, const int listLength, cyclist *p, int *best);
 
 
 /* Main function */
@@ -73,18 +74,7 @@ int main(int argc, char const *argv[])
     /* ---------------------------------------------- */
     
     /* Main */
-    runMenu(argv, raceList, listOfDanes, riderList);
-
-
-    free(listOfDanes);
-    return 0;
-}
-
-
-/* Run's the user menu */
-void runMenu(char const **argv, const cycleRace *raceList, const char *listOfDanes, const cyclist *riderList)
-{
-    int menuVar = 0;
+        int menuVar = 0;
 
     if(strcmp(argv[1], "--print") == 0)
     {
@@ -105,6 +95,13 @@ void runMenu(char const **argv, const cycleRace *raceList, const char *listOfDan
         {
             printf("Placement: %-4d %-20s %-20s %10d\n", i+1, riderList[i].firstName, riderList[i].lastName, riderList[i].points);
         }
+
+        /* Opgave 4 */
+        int bestRider;
+        getBestAvg("ParisRoubaix" ,"AmstelGoldRace", raceList, u, riderList, &bestRider);
+        printf("\n\nOpgave 4:\n");
+        printf("The best rider in ParisRoubaix and Amstel Gold Race is: %s ", riderList[bestRider].firstName);
+        printf("%s\n", riderList[bestRider].lastName);
     }
 
     while(menuVar != -1)
@@ -129,6 +126,14 @@ void runMenu(char const **argv, const cycleRace *raceList, const char *listOfDan
                 printf("Placement: %-4d %-20s %-20s\n", i, riderList[i].firstName, riderList[i].lastName);
             }
         }
+        else if(menuVar == 4)
+        {
+
+        }
+        else if(menuVar == 5)
+        {
+
+        }
 
         if(menuVar != -1)
         {
@@ -136,6 +141,9 @@ void runMenu(char const **argv, const cycleRace *raceList, const char *listOfDan
             scanf(" r");
         }
     }
+
+    free(listOfDanes);
+    return 0;
 }
 
 
@@ -428,4 +436,42 @@ int cmpfunc(const void *a, const void *b)
 void sortByTop(cyclist *p, const int listLength)
 {
     qsort(p, listLength, sizeof(cyclist), cmpfunc);
+}
+
+/* 4. */
+void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, const int listLength, cyclist *p, int *best)
+{
+    int saveForLater = -1;
+    int bestTime = 0;
+
+    for(int i = 0; i <= listLength; i++)
+    {
+        p[i].temp = -1;
+    }
+
+    for(int i = 0; i < listLength; i++)
+    {
+        for(int j = 0; j < ARRAY_SIZE; j++)
+        {
+            if(strcmp(p[i].firstName, r[j].firstName) == 0 && strcmp(p[i].lastName, r[j].lastName) == 0)
+            {
+                if( r[j].placement > 0 && ((strcmp(r[j].raceName, rName1) == 0) || strcmp(r[j].raceName, rName2) == 0))
+                {
+                    p[i].temp += (r[j].trackTimeHours * 60 * 60) + (r[j].trackTimeMin * 60) + r[j].trackTimeSec;
+                }
+            }
+        }
+    }
+
+    /* Find the best time for the two races */
+    for(int i = 0; i < listLength; i++)
+    {
+        if(saveForLater > p[i].temp || saveForLater == -1)
+        {
+            bestTime = i;
+            saveForLater = p[i].temp;
+            printf("%ld %ld %ld\n", bestTime, saveForLater, p[i].temp);
+        }
+    }
+    *best = bestTime;
 }
