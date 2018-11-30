@@ -1,3 +1,38 @@
+/*
+    Opgave 1:
+    Find og udskriv løbsresultaterne for alle italienske cykelryttere over 30 år. 
+    I denne opgave er det OK at lave en funktion som blot printer resultaterne direkte
+
+    Opgave 2:
+    Skriv en funktion som returnerer et array af alle de danske ryttere,
+    som har gennemført et eller flere af de fire cykelløb,
+    enten med en placering eller med OTL. Kald funktionen,
+    og udskriv disse danske ryttere samt hvor mange løb hver af de danske
+    ryttere har gennemført. Bemærk, at hver rytter kun ønskes udskrevet en gang.
+
+    Opgave 3:
+    Udskriv de 10 ryttere som har opnået flest point.
+    Sorter primært rytterne efter antal point.
+    Ved pointlighed sorteres rytterne alfabetisk efter efternavn. 
+    (Efternavnet er den del af rytterens navn som er skrevet med udelukkende store bogstaver.
+    Bemærk at efternavnet også kan indeholde mellemrum og specialtegn).
+
+    Opgave 4:
+    I denne opgave fokuseres på de to cykelløb Paris Roubaix og Amstel Gold Race.
+    Skriv en funktion som finder den rytter, som har gennemført begge disse løb,
+    og som har den mindste samlede køretid i de to løb.
+    Funktionen skal have rytteren og den samlede køretid som outputparametre.
+    Kald funktionen og udskriv rytterens navn og den samlede køretid (i timer, minutter og sekunder).
+
+    Opgave 5:
+    Beregn gennemsnitsalderen (af typen double) blandt alle de ryttere,
+    som har opnået en topti placering i et eller flere cykelløb. 
+    Vær sikker på at ryttere, som har et top-ti resultat i to eller flere 
+    af de fire løb, ikke indgår mere én gang i gennemsnitsberegningen.
+
+
+    Program udarbejdet af Marcus D. Christiansen.
+*/
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
@@ -54,17 +89,23 @@ void calculateScore(cyclist *p, const cycleRace *r, const int listLength);
 void sortByTop(cyclist *p, const int listLength);
 int cmpfunc(const void *a, const void *b);
 void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, const int listLength, cyclist *p, int *best);
+double getAvgAge(const int riderAmount, const cyclist *p);
 
 
 /* Main function */
 int main(int argc, char const *argv[])
 {
-    /* Variables */
+    /* Arrays */
     cycleRace raceList[ARRAY_SIZE];
     cyclist riderList[ARRAY_SIZE];
-    /* ---------------------------------- */
+    /* ---------------------------------------------------- */
 
+
+    /* Variables */
     char *listOfDanes;
+    int bestRider;
+    /* ---------------------------------------------------- */
+
 
     /* Initialization */
     loadDataSet(INPUT_FILE, raceList);
@@ -72,8 +113,9 @@ int main(int argc, char const *argv[])
     calculateScore(riderList, raceList, u);
     sortByTop(riderList, u);
     listOfDanes = getStringOfRiders(riderList, u, 1, "DEN");
-    /* ---------------------------------------------- */
+    /* ---------------------------------------------------- */
     
+
     /* Main */
         int menuVar = 0;
 
@@ -98,11 +140,13 @@ int main(int argc, char const *argv[])
         }
 
         /* Opgave 4 */
-        int bestRider;
         getBestAvg("ParisRoubaix" ,"AmstelGoldRace", raceList, u, riderList, &bestRider);
         printf("\n\nOpgave 4:\n");
         printf("The best rider in ParisRoubaix and Amstel Gold Race is: %s ", riderList[bestRider].firstName);
         printf("%s\n", riderList[bestRider].lastName);
+
+        /* Opgave 5 */
+        printf("Avg age of top %d is: %0.2lf\n", 10, getAvgAge(10, riderList));
     }
 
     while(menuVar != -1)
@@ -112,28 +156,36 @@ int main(int argc, char const *argv[])
         if(menuVar == 1)
         {
             // Opgave 1
+            printf("Opgave 1:\n");
             printNationalResults(raceList, "ITA", 30, 99);
         }
         else if(menuVar == 2)
         {
             // Opgave 2
+            printf("\n\nOpgave 2:\n");
             printf("%s", listOfDanes);
         }
         else if(menuVar == 3)
         {
             // Opgave 3
+            printf("\n\nOpgave 3:\n");
+            printf("--------------------------------------------\nPosition \t|  Name \t|  Points\n--------------------------------------------\n");
             for(int i = 0; i < 10; i++)
             {
-                printf("Placement: %-4d %-20s %-20s\n", i, riderList[i].firstName, riderList[i].lastName);
+                printf("Placement: %-4d %-20s %-20s %10d\n", i+1, riderList[i].firstName, riderList[i].lastName, riderList[i].points);
             }
         }
         else if(menuVar == 4)
         {
-
+            getBestAvg("ParisRoubaix" ,"AmstelGoldRace", raceList, u, riderList, &bestRider);
+            printf("\n\nOpgave 4:\n");
+            printf("The best rider in ParisRoubaix and Amstel Gold Race is: %s ", riderList[bestRider].firstName);
+            printf("%s\n", riderList[bestRider].lastName);
         }
         else if(menuVar == 5)
         {
-
+            /* Opgave 5 */
+            printf("Avg age of top %d is: %0.2lf\n", 10, getAvgAge(10, riderList));
         }
 
         if(menuVar != -1)
@@ -310,9 +362,9 @@ int createUniqueList(const cycleRace *r, cyclist *p)
 }
 
 
-/*
+/*----------------------------------------------------------------
     2. Return a list of all riders with a specific nationality 
-*/
+----------------------------------------------------------------*/
 char* getStringOfRiders(const cyclist *p, const int listLength, const int minRaceComp, const char *nat)
 {
     char buffer[20];
@@ -349,7 +401,9 @@ char* getStringOfRiders(const cyclist *p, const int listLength, const int minRac
 }
 
 
-/* Calculate number of participants in a race */
+/*------------------------------------------------ 
+    Calculate number of participants in a race 
+------------------------------------------------*/
 int participants(const char *race, const cycleRace *r)
 {
     int result = 0;
@@ -365,7 +419,9 @@ int participants(const char *race, const cycleRace *r)
 }
 
 
-/* 3.  */
+/*----------------------------------------------------
+    3. Calculate the combined score of all riders 
+----------------------------------------------------*/
 void calculateScore(cyclist *p, const cycleRace *r, const int listLength)
 {
     for(int i = 0; i <= listLength; i++)
@@ -408,7 +464,9 @@ void calculateScore(cyclist *p, const cycleRace *r, const int listLength)
 }
 
 
-/* Sorting function */
+/*--------------------------
+    3. Sorting function 
+--------------------------*/
 int cmpfunc(const void *a, const void *b)
 {
     cyclist *p1, *p2;
@@ -434,12 +492,17 @@ int cmpfunc(const void *a, const void *b)
     }
 }
 
+/*--------------------------------------
+    3. Sort the list by most points 
+--------------------------------------*/
 void sortByTop(cyclist *p, const int listLength)
 {
     qsort(p, listLength, sizeof(cyclist), cmpfunc);
 }
 
-/* 4. */
+/*----------------------------------------------------------------
+    4. Get the rider with the best combined time from 2 races
+----------------------------------------------------------------*/
 void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, const int listLength, cyclist *p, int *best)
 {
     int saveForLater = -1;
@@ -473,7 +536,22 @@ void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, cons
             bestTime = i;
             saveForLater = p[i].temporary;
         }
-        printf("%-20s %d %d\n", p[i].firstName, p[i].temporary, bestTime);
     }
     *best = bestTime;
+}
+
+
+/*----------------------------------------------------------------
+    5. Get x amount of riders and calculate average age
+----------------------------------------------------------------*/
+double getAvgAge(const int riderAmount, const cyclist *p)
+{
+    double sum = 0;
+    for(int i = 0; i < riderAmount; i++)
+    {
+        sum += p[i].age;
+        printf("%s %d\n", p[i].firstName, p[i].age);
+    }
+
+    return (sum / riderAmount);
 }
