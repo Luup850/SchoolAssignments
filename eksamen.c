@@ -89,7 +89,7 @@ void calculateScore(cyclist *p, const cycleRace *r, const int listLength);
 void sortByTop(cyclist *p, const int listLength);
 int cmpfunc(const void *a, const void *b);
 void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, const int listLength, cyclist *p, int *best);
-double getAvgAge(const int riderAmount, const cyclist *p);
+double getAvgAge(const int riderAmount, const cycleRace *r);
 
 
 /* Main function */
@@ -117,7 +117,7 @@ int main(int argc, char const *argv[])
     
 
     /* Main */
-        int menuVar = 0;
+    int menuVar = 0;
 
     if(strcmp(argv[1], "--print") == 0)
     {
@@ -146,7 +146,8 @@ int main(int argc, char const *argv[])
         printf("%s\n", riderList[bestRider].lastName);
 
         /* Opgave 5 */
-        printf("Avg age of top %d is: %0.2lf\n", 10, getAvgAge(10, riderList));
+        printf("\n\nOpgave 5:\n");
+        printf("Avg age of top %d for all the races is: %0.2lf\n", 10, getAvgAge(10, raceList));
     }
 
     while(menuVar != -1)
@@ -185,7 +186,8 @@ int main(int argc, char const *argv[])
         else if(menuVar == 5)
         {
             /* Opgave 5 */
-            printf("Avg age of top %d is: %0.2lf\n", 10, getAvgAge(10, riderList));
+            printf("\n\nOpgave 5:\n");
+            printf("Avg age of top %d for all the races is: %0.2lf\n", 10, getAvgAge(10, raceList));
         }
 
         if(menuVar != -1)
@@ -542,16 +544,30 @@ void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, cons
 
 
 /*----------------------------------------------------------------
-    5. Get x amount of riders and calculate average age
+    5. Get the avg age of top 10 for all the races
 ----------------------------------------------------------------*/
-double getAvgAge(const int riderAmount, const cyclist *p)
+double getAvgAge(const int riderAmount, const cycleRace *r)
 {
     double sum = 0;
-    for(int i = 0; i < riderAmount; i++)
+    int amount = 0;
+    char fullName[80];
+    char temp[3200];
+
+    for(int i = 0; i < ARRAY_SIZE; i++)
     {
-        sum += p[i].age;
-        printf("%s %d\n", p[i].firstName, p[i].age);
+        fullName[0] = '\0';
+        strcat(fullName, r[i].firstName);
+        strcat(fullName, " ");
+        strcat(fullName, r[i].lastName);
+
+        if(strstr(temp, fullName) == '\0' && r[i].placement >= riderAmount)
+        {
+            strcat(temp, fullName);
+            strcat(fullName, ", ");
+            sum += r[i].age;
+            amount++;
+        }
     }
 
-    return (sum / riderAmount);
+    return (sum / amount);
 }
