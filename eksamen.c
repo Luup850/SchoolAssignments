@@ -499,6 +499,7 @@ int cmpfunc(const void *a, const void *b)
     }
 }
 
+
 /*--------------------------------------
     3. Sort the list by most points 
 --------------------------------------*/
@@ -506,6 +507,7 @@ void sortByTop(cyclist *p, const int listLength)
 {
     qsort(p, listLength, sizeof(cyclist), cmpfunc);
 }
+
 
 /*----------------------------------------------------------------
     4. Get the rider with the best combined time from 2 races
