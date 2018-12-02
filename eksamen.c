@@ -1,44 +1,9 @@
-/*
-    Opgave 1:
-    Find og udskriv løbsresultaterne for alle italienske cykelryttere over 30 år. 
-    I denne opgave er det OK at lave en funktion som blot printer resultaterne direkte
-
-    Opgave 2:
-    Skriv en funktion som returnerer et array af alle de danske ryttere,
-    som har gennemført et eller flere af de fire cykelløb,
-    enten med en placering eller med OTL. Kald funktionen,
-    og udskriv disse danske ryttere samt hvor mange løb hver af de danske
-    ryttere har gennemført. Bemærk, at hver rytter kun ønskes udskrevet en gang.
-
-    Opgave 3:
-    Udskriv de 10 ryttere som har opnået flest point.
-    Sorter primært rytterne efter antal point.
-    Ved pointlighed sorteres rytterne alfabetisk efter efternavn. 
-    (Efternavnet er den del af rytterens navn som er skrevet med udelukkende store bogstaver.
-    Bemærk at efternavnet også kan indeholde mellemrum og specialtegn).
-
-    Opgave 4:
-    I denne opgave fokuseres på de to cykelløb Paris Roubaix og Amstel Gold Race.
-    Skriv en funktion som finder den rytter, som har gennemført begge disse løb,
-    og som har den mindste samlede køretid i de to løb.
-    Funktionen skal have rytteren og den samlede køretid som outputparametre.
-    Kald funktionen og udskriv rytterens navn og den samlede køretid (i timer, minutter og sekunder).
-
-    Opgave 5:
-    Beregn gennemsnitsalderen (af typen double) blandt alle de ryttere,
-    som har opnået en topti placering i et eller flere cykelløb. 
-    Vær sikker på at ryttere, som har et top-ti resultat i to eller flere 
-    af de fire løb, ikke indgår mere én gang i gennemsnitsberegningen.
-
-
-    Program udarbejdet af Marcus D. Christiansen.
-*/
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
 #include<ctype.h> /* Isupper */
 
-/* Anti magic number system */
+/* Defines */
 #define MAX_NAME_SIZE 40
 #define MAX_TEAM_NATIONALITY_NAME 4
 #define ARRAY_SIZE 790
