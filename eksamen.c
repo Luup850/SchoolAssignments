@@ -88,7 +88,7 @@ int participants(const char *race, const cycleRace *r);
 void calculateScore(cyclist *p, const cycleRace *r, const int listLength);
 void sortByTop(cyclist *p, const int listLength);
 int cmpfunc(const void *a, const void *b);
-void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, const int listLength, cyclist *p, int *best);
+void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, const int listLength, cyclist *p, int *bestRider, int timeOfCyclist[]);
 double getAvgAge(const int riderAmount, const cycleRace *r);
 
 
@@ -104,6 +104,7 @@ int main(int argc, char const *argv[])
     /* Variables */
     char *listOfDanes;
     int bestRider;
+    int timeOfCyclist[3];
     /* ---------------------------------------------------- */
 
 
@@ -119,6 +120,7 @@ int main(int argc, char const *argv[])
     /* Main */
     int menuVar = 0;
 
+
     if(strcmp(argv[1], "--print") == 0)
     {
         menuVar = -1;
@@ -128,7 +130,7 @@ int main(int argc, char const *argv[])
         printNationalResults(raceList, "ITA", 30, 99);
 
         /* Opgave 2 */
-        printf("\n\nOpgave 2:\n");
+        printf("\n\nOpgave 2:\nAntal loeb \tNavn\n");
         printf("%s", listOfDanes);
 
         /* Opgave 3 */
@@ -140,10 +142,11 @@ int main(int argc, char const *argv[])
         }
 
         /* Opgave 4 */
-        getBestAvg("ParisRoubaix" ,"AmstelGoldRace", raceList, u, riderList, &bestRider);
+        getBestAvg("ParisRoubaix" ,"AmstelGoldRace", raceList, u, riderList, &bestRider, timeOfCyclist);
         printf("\n\nOpgave 4:\n");
         printf("The best rider in ParisRoubaix and Amstel Gold Race is: %s ", riderList[bestRider].firstName);
         printf("%s\n", riderList[bestRider].lastName);
+        printf(", with the time %d:%d:%d\n", timeOfCyclist[0], timeOfCyclist[1], timeOfCyclist[2]);
 
         /* Opgave 5 */
         printf("\n\nOpgave 5:\n");
@@ -156,19 +159,19 @@ int main(int argc, char const *argv[])
         scanf(" %d", &menuVar);
         if(menuVar == 1)
         {
-            // Opgave 1
+            /* Opgave 1 */
             printf("Opgave 1:\n");
             printNationalResults(raceList, "ITA", 30, 99);
         }
         else if(menuVar == 2)
         {
-            // Opgave 2
-            printf("\n\nOpgave 2:\n");
+            /* Opgave 2 */
+            printf("\n\nOpgave 2:\nAntal loeb \tNavn\n");
             printf("%s", listOfDanes);
         }
         else if(menuVar == 3)
         {
-            // Opgave 3
+            /* Opgave 3 */
             printf("\n\nOpgave 3:\n");
             printf("--------------------------------------------\nPosition \t|  Name \t|  Points\n--------------------------------------------\n");
             for(int i = 0; i < 10; i++)
@@ -178,10 +181,12 @@ int main(int argc, char const *argv[])
         }
         else if(menuVar == 4)
         {
-            getBestAvg("ParisRoubaix" ,"AmstelGoldRace", raceList, u, riderList, &bestRider);
+            /* Opgave 4 */
+            getBestAvg("ParisRoubaix" ,"AmstelGoldRace", raceList, u, riderList, &bestRider, timeOfCyclist);
             printf("\n\nOpgave 4:\n");
             printf("The best rider in ParisRoubaix and Amstel Gold Race is: %s ", riderList[bestRider].firstName);
             printf("%s\n", riderList[bestRider].lastName);
+            printf(", with the time %d:%d:%d\n", timeOfCyclist[0], timeOfCyclist[1], timeOfCyclist[2]);
         }
         else if(menuVar == 5)
         {
@@ -505,23 +510,31 @@ void sortByTop(cyclist *p, const int listLength)
 /*----------------------------------------------------------------
     4. Get the rider with the best combined time from 2 races
 ----------------------------------------------------------------*/
-void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, const int listLength, cyclist *p, int *best)
+void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, const int listLength, cyclist *p, int *bestRider, int timeOfCyclist[])
 {
     int saveForLater = -1;
     int bestTime = 0;
+    int rest = 0;
 
+    /* Reset the temp variables */
     for(int i = 0; i <= listLength; i++)
     {
         p[i].temporary = -1;
         p[i].temporary2 = 0;
+    }
 
+
+    for(int i = 0; i <= listLength; i++)
+    {
         for(int j = 0; j < ARRAY_SIZE; j++)
         {
+            /* Check if first name and last name matches in both arrays of structs */
             if(strcmp(p[i].firstName, r[j].firstName) == 0 && strcmp(p[i].lastName, r[j].lastName) == 0)
             {
-                if( r[j].placement >= 1 && ((strcmp(r[j].raceName, rName1) == 0) || strcmp(r[j].raceName, rName2) == 0))
+                /* Check if the races matches either rName1 or rName2 and check that they didnt DNF */
+                if( r[j].placement >= 1 && (strcmp(r[j].raceName, rName1) == 0 || strcmp(r[j].raceName, rName2) == 0))
                 {
-                    p[i].temporary2 += 1;
+                    p[i].temporary2 = p[i].temporary2 + 1;
                     p[i].temporary = p[i].temporary + (r[j].trackTimeHours * 60 * 60);
                     p[i].temporary = p[i].temporary + (r[j].trackTimeMin * 60);
                     p[i].temporary = p[i].temporary + r[j].trackTimeSec;
@@ -533,13 +546,23 @@ void getBestAvg(const char *rName1, const char *rName2, const cycleRace *r, cons
     /* Find the best time for the two races */
     for(int i = 0; i <= listLength; i++)
     {
-        if((saveForLater > p[i].temporary || p[i].temporary < 0) && p[i].temporary2 != 0)
+        if((saveForLater > p[i].temporary || saveForLater < 0) && p[i].temporary2 == 2)
         {
             bestTime = i;
             saveForLater = p[i].temporary;
         }
     }
-    *best = bestTime;
+
+    /* Calculate the seconds back to hours, min and sec */
+    timeOfCyclist[0] = p[bestTime].temporary / (60 * 60);
+    rest = p[bestTime].temporary % (60 * 60);
+
+    timeOfCyclist[1] = rest / 60;
+    rest = rest % 60;
+
+    timeOfCyclist[2] = rest;
+
+    *bestRider = bestTime;
 }
 
 
@@ -555,13 +578,16 @@ double getAvgAge(const int riderAmount, const cycleRace *r)
 
     for(int i = 0; i < ARRAY_SIZE; i++)
     {
+        /* Make a string of their full name */
         fullName[0] = '\0';
         strcat(fullName, r[i].firstName);
         strcat(fullName, " ");
         strcat(fullName, r[i].lastName);
 
+        /* Check if we've already counted them */
         if(strstr(temp, fullName) == '\0' && r[i].placement >= riderAmount)
         {
+            /* If we didnt count them, then add them to the string and get their age */
             strcat(temp, fullName);
             strcat(fullName, ", ");
             sum += r[i].age;
@@ -569,5 +595,6 @@ double getAvgAge(const int riderAmount, const cycleRace *r)
         }
     }
 
+    /* Return the average age */
     return (sum / amount);
 }
