@@ -1,18 +1,17 @@
-#include<stdio.h>
+#include <stdio.h>
+#include <string.h>
 
-int test();
+void test2 (int);
 
-int main(int argc, char const *argv[])
-{
-    printf("%d", test());
+int main (void) {
+    const int testArray = 2;
+    test2(&testArray);
+
+    printf("%d", testArray);
+    return(0);
 }
 
-int test()
-{
-    for(int i = 0; i < 20; i++)
-    {
-        if(i == 5)
-            return 3;
-    }
-    return 10;
+void test2 (int* array){
+    
+    *array = 7;
 }
